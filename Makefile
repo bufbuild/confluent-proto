@@ -10,7 +10,7 @@ COPYRIGHT_YEARS := 2023
 LICENSE_IGNORE := --ignore /testdata/
 # Set to use a different compiler. For example, `GO=go1.18rc1 make test`.
 GO ?= go
-BUF_VERSION := v1.25.0
+BUF_VERSION := v1.32.0-beta.1
 
 .PHONY: help
 help: ## Describe useful make targets
