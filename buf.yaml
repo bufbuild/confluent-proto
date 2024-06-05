@@ -1,8 +1,9 @@
-version: v1
+version: v2
 name: buf.build/bufbuild/confluent
-breaking:
-  use:
-    - FILE
 lint:
   use:
     - DEFAULT
+  disallow_comment_ignores: true
+breaking:
+  use:
+    - FILE
