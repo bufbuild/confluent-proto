@@ -10,14 +10,15 @@ COPYRIGHT_YEARS := 2023
 LICENSE_IGNORE := --ignore /testdata/
 # Set to use a different compiler. For example, `GO=go1.18rc1 make test`.
 GO ?= go
-BUF_VERSION := v1.32.0-beta.1
+BUF_VERSION ?= 1.32.2
 
 .PHONY: help
 help: ## Describe useful make targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-30s %s\n", $$1, $$2}'
 
 .PHONY: all
-all: ## Build and lint (default)
+all: ## Generate, build and lint (default)
+	$(MAKE) generate
 	$(MAKE) build
 	$(MAKE) lint
 
@@ -54,9 +55,9 @@ checkgenerate:
 
 $(BIN)/buf: Makefile
 	@mkdir -p $(@D)
-	GOBIN="$(abspath $(@D))" $(GO) install github.com/bufbuild/buf/cmd/buf@$(BUF_VERSION)
+	GOBIN="$(abspath $(@D))" $(GO) install github.com/bufbuild/buf/cmd/buf@v$(BUF_VERSION)
 
 $(BIN)/license-header: Makefile
 	@mkdir -p $(@D)
 	GOBIN="$(abspath $(@D))" $(GO) install \
-		  github.com/bufbuild/buf/private/pkg/licenseheader/cmd/license-header@$(BUF_VERSION)
+		  github.com/bufbuild/buf/private/pkg/licenseheader/cmd/license-header@v$(BUF_VERSION)
