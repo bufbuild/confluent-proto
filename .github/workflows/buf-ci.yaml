@@ -1,7 +1,9 @@
 name: buf
 on:
+  push:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
+  delete:
 permissions:
   contents: read
   pull-requests: write
@@ -13,3 +15,4 @@ jobs:
       - uses: bufbuild/buf-action@v0.1
         with:
           version: 1.32.2
+          token: ${{ secrets.BUF_TOKEN }}
