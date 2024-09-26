@@ -1,3 +1,4 @@
+# See https://tech.davis-hansson.com/p/make/
 SHELL := bash
 .DELETE_ON_ERROR:
 .SHELLFLAGS := -eu -o pipefail -c
@@ -6,18 +7,18 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 MAKEFLAGS += --no-print-directory
 BIN := .tmp/bin
-COPYRIGHT_YEARS := 2023
-LICENSE_IGNORE := --ignore /testdata/
-# Set to use a different compiler. For example, `GO=go1.18rc1 make test`.
-GO ?= go
-BUF_VERSION ?= 1.32.2
+export PATH := $(BIN):$(PATH)
+export GOBIN := $(abspath $(BIN))
+
+BUF_VERSION := v1.42.0
+COPYRIGHT_YEARS := 2023-2024
 
 .PHONY: help
 help: ## Describe useful make targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-30s %s\n", $$1, $$2}'
 
 .PHONY: all
-all: ## Generate, build and lint (default)
+all: ## Generate, build, and lint (default)
 	$(MAKE) generate
 	$(MAKE) build
 	$(MAKE) lint
@@ -27,26 +28,26 @@ clean: ## Delete intermediate build artifacts
 	@# -X only removes untracked files, -d recurses into directories, -f actually removes files/dirs
 	git clean -Xdf
 
-.PHONY: build ## Build protobuf
-build: $(BIN)/buf generate ## Build all packages
-	$(BIN)/buf build
+.PHONY: build
+build: $(BIN)/buf ## Build all APIs
+	buf build
 
 .PHONY: lint
-lint: $(BIN)/buf ## Lint Go and protobuf
-	test -z "$$($(BIN)/buf format -d . | tee /dev/stderr)"
-	$(BIN)/buf lint
-	$(BIN)/buf format -d --exit-code
+lint: $(BIN)/buf ## Lint all APIs
+	buf lint
+	buf format -d --exit-code
 
-.PHONY: lintfix
-lintfix: $(BIN)/buf ## Automatically fix some lint errors
-	$(BIN)/buf format -w
+.PHONY: upgrade
+upgrade: $(BIN)/buf ## Upgrade dependencies
+	buf dep update
 
 .PHONY: generate
-generate: $(BIN)/license-header ## Regenerate licenses
-	$(BIN)/license-header \
+generate: $(BIN)/buf $(BIN)/license-header ## Format and regenerate license headers
+	license-header \
 		--license-type apache \
 		--copyright-holder "Buf Technologies, Inc." \
-		--year-range "$(COPYRIGHT_YEARS)" $(LICENSE_IGNORE)
+		--year-range "$(COPYRIGHT_YEARS)"
+	buf format -w
 
 .PHONY: checkgenerate
 checkgenerate:
@@ -55,9 +56,8 @@ checkgenerate:
 
 $(BIN)/buf: Makefile
 	@mkdir -p $(@D)
-	GOBIN="$(abspath $(@D))" $(GO) install github.com/bufbuild/buf/cmd/buf@v$(BUF_VERSION)
+	go install github.com/bufbuild/buf/cmd/buf@$(BUF_VERSION)
 
 $(BIN)/license-header: Makefile
 	@mkdir -p $(@D)
-	GOBIN="$(abspath $(@D))" $(GO) install \
-		  github.com/bufbuild/buf/private/pkg/licenseheader/cmd/license-header@v$(BUF_VERSION)
+	go install github.com/bufbuild/buf/private/pkg/licenseheader/cmd/license-header@$(BUF_VERSION)
