@@ -9,6 +9,21 @@ This module contains Protobuf extensions for integration with the Confluent Sche
 
 ## Usage
 
+Add a dependency on this module in your `buf.yaml`:
+
+```yaml
+version: v2
+deps:
+  # For enterprise users: replace "buf.build" with the hostname of your instance.
+  - buf.build/bufbuild/confluent
+```
+
+Add this dependency to your `buf.lock`:
+
+```bash
+buf dep update
+```
+
 To specify the mapping between a given subject and a Protobuf message, set the
 `buf.confluent.v1.Subject`. For example, the following defines a mapping between the
 `acme.v1.EmailUpdated` message and the Confluent Schema Registry subject `email-updated-value`:
