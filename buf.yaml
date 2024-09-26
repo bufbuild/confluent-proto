@@ -2,7 +2,8 @@ version: v2
 name: buf.build/bufbuild/confluent
 lint:
   use:
-    - DEFAULT
+    - STANDARD
+    - COMMENTS
   disallow_comment_ignores: true
 breaking:
   use:

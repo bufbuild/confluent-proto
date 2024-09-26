@@ -1,4 +1,4 @@
-// Copyright 2023 Buf Technologies, Inc.
+// Copyright 2023-2024 Buf Technologies, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,32 +14,31 @@
 
 syntax = "proto3";
 
+// Defines an extension to map a Protouf message to a Confluent subject.
 package buf.confluent.v1;
 
 import "google/protobuf/descriptor.proto";
 
-// Subject declares a unique mapping between a protobuf Message and a subject
-// name with an instance of the Confluent Schema Registry integration in the
-// BSR.
+// Declares a unique mapping between a Protobuf Message and a subject name with an instance of the
+// Confluent Schema Registry integration in the BSR.
 //
-// For more details on the Confluent Schema Registry model, see:
-// https://docs.confluent.io/platform/current/schema-registry/fundamentals/index.html#schemas-subjects-and-topics
+// See https://docs.confluent.io/platform/current/schema-registry/fundamentals/index.html#schemas-subjects-and-topics
+// for more details on the Confluent Schema Registry model.
 message Subject {
-  // instance_name is the user-specified name for the Confluent Schema Registry
-  // instance within the BSR. Instances are managed within Admin Settings in the BSR.
+  // The user-specified name for the Confluent Schema Registry instance within the BSR.
+  // Instances are managed within BSR admin settings.
   string instance_name = 1;
-  // name is the subject's name, determined by the subject naming strategy. See
-  // the Confluent documentation for more details:
-  // https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/index.html#subject-name-strategy
+  // The subject's name as determined by the subject naming strategy.
   //
-  // The default subject name strategy is TopicNameStrategy, which appends
-  // either '-key' or '-value' to a Kafka topic's name to create the subject
-  // name.
+  // See https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/index.html#subject-name-strategy
+  // for more details.
+  //
+  // The default subject name strategy is TopicNameStrategy, which appends either "-key" or
+  // "-value" to a Kafka topic's name to create the subject name.
   string name = 2;
 }
 
 extend google.protobuf.MessageOptions {
-  // subject identifies Confluent Schema Registry subjects whose schema is
-  // defined by the containing message.
+  // The Confluent Schema Registry subjects whose schema is defined by the containing message.
   repeated Subject subject = 1158;
 }
